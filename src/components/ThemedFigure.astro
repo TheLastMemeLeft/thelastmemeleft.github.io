@@ -1,0 +1,8 @@
+---
+// Shows the dark or light SVG variant of a plot to match the site theme.
+interface Props { name: 'dg' | 'ddg'; alt: string; width?: number; height?: number; eager?: boolean }
+const { name, alt, width = 720, height = 400, eager = false } = Astro.props;
+const loading = eager ? 'eager' : 'lazy';
+---
+<img class="only-dark" src={`/figures/${name}-dark.svg`} alt={alt} width={width} height={height} loading={loading} decoding="async" />
+<img class="only-light" src={`/figures/${name}-light.svg`} alt={alt} width={width} height={height} loading={loading} decoding="async" />

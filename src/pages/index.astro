@@ -1,17 +1,101 @@
 ---
-import MainLayout from '../layouts/MainLayout.astro';  // Imports the layout we just made
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import ThemedFigure from '../components/ThemedFigure.astro';
+import me from '../assets/me.jpg';
+import { site, featured, experience, education, otherProjects, skills } from '../data/site';
 ---
-<MainLayout title="Home">
-  <section class="hero min-h-screen flex items-center justify-center text-center bg-gradient-to-b from-background to-accent/10">
-    <div class="container mx-auto px-6">
-      <h1 class="text-6xl font-bold mb-4 highlight">Aryan Agarwal</h1>  <!-- Aura with underline -->
-      <p class="text-2xl text-muted max-w-2xl mx-auto">Hi, I'm Aryan Agarwal, 3rd Year Data Science @UCSD </p>
-      <a href="/projects" class="mt-8 inline-block bg-primary text-background px-8 py-3 rounded hover:bg-primary/80 transition">View Projects</a>
+<Base>
+  <section class="hero" aria-labelledby="hi">
+    <div>
+      <p class="hello">Hi, I'm</p>
+      <h1 id="hi">{site.name}</h1>
+      <p class="role">{site.role}</p>
+      <div class="intro">
+        {site.intro.map((line) => <p>{line}</p>)}
+      </div>
+      <ul class="tags hero-stack" aria-label="Main stack">{site.stack.map((s) => <li>{s}</li>)}</ul>
+      <p class="open-to"><span class="dot" aria-hidden="true"></span>{site.openTo}</p>
+      <div class="ctas">
+        <a class="btn primary" href={site.resume}><Icon name="download" />Resume</a>
+        <a class="btn" href={site.github} rel="me"><Icon name="github" />GitHub</a>
+        <a class="btn" href={site.linkedin} rel="me"><Icon name="linkedin" />LinkedIn</a>
+        <a class="btn" href={`mailto:${site.email}`}><Icon name="mail" />Email</a>
+      </div>
+    </div>
+    <Image class="avatar" src={me} alt={`Photo of ${site.name}`} width={264} height={264} loading="eager" />
+  </section>
+
+  <section class="section" id="work" aria-labelledby="work-h">
+    <div class="section-head"><span class="idx">01</span><h2 id="work-h">Featured work</h2></div>
+    <div class="grid">
+      {featured.map((f, i) => (
+        <article class={`card ${f.figure || i === featured.length - 1 && featured.length % 2 === 0 ? 'wide' : ''}`}>
+          <div class={f.figure ? 'card-wide-body' : ''}>
+            <div>
+              <span class="kicker">{f.kicker}</span>
+              <h3>{f.title}</h3>
+              <div class="meta"><span>{f.org}</span><span class="mono">{f.dates}</span></div>
+              <p class="summary">{f.summary}</p>
+              <ul class="stats">
+                {f.stats.map((s) => <li><span class="v">{s.value}</span><span class="l">{s.label}</span></li>)}
+              </ul>
+              <ul class="tags" aria-label="Tech used">{f.tags.map((t) => <li>{t}</li>)}</ul>
+              <div class="foot">
+                {f.note && <span class="note">{f.note}</span>}
+                {f.link && <a href={f.link.href}>{f.link.label} →</a>}
+              </div>
+            </div>
+            {f.figure && (
+              <a class="fig" href={f.link?.href} aria-label="Open the ATLAS write-up">
+                <ThemedFigure name="ddg" alt="Bar chart: switching gap ΔΔG by UMA model head, 0.54 to 0.77 eV on the thesis slabs, against the DFT value of 0.91 eV." width={640} height={440} />
+              </a>
+            )}
+          </div>
+        </article>
+      ))}
     </div>
   </section>
-  <section class="bio container mx-auto px-6 py-16">
-    <h2 class="text-4xl font-bold mb-8 text-center">About Me</h2>
-    <p class="text-lg text-muted max-w-3xl mx-auto text-center">Data Science student @ UCSD interested in pursuing a career in cloud engineering and AI solutions <span class="highlight"> <br> Prev Cloud Data Engineering @ Ally Financial</span>. <span class="highlight"> <br> Incoming SWE @IBM</span>.</p>
-    <div class="divider"></div>  <!-- Subtle gray line -->
+
+  <section class="section" id="experience" aria-labelledby="exp-h">
+    <div class="section-head"><span class="idx">02</span><h2 id="exp-h">Experience</h2></div>
+    <ul class="list">
+      {experience.map((e) => (
+        <li class="row"><span class="what">{e.org}</span><span class="when">{e.dates}</span><span class="sub">{e.role} · {e.place}</span></li>
+      ))}
+      <li class="row"><span class="what">{education.school}</span><span class="when">{education.dates}</span><span class="sub">{education.degree} · {education.coursework}</span></li>
+    </ul>
   </section>
-</MainLayout>
+
+  <section class="section" id="projects" aria-labelledby="proj-h">
+    <div class="section-head"><span class="idx">03</span><h2 id="proj-h">Other projects</h2></div>
+    <div class="mini">
+      {otherProjects.map((p) => (
+        <a href={p.href}>
+          <strong>{p.title}</strong>
+          <p>{p.summary}</p>
+          <ul class="tags" aria-label="Tech used">{p.tags.map((t) => <li>{t}</li>)}</ul>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="section" id="skills" aria-labelledby="skills-h">
+    <div class="section-head"><span class="idx">04</span><h2 id="skills-h">Skills</h2></div>
+    <dl class="skills">
+      {skills.map((s) => <><dt>{s.group}</dt><dd>{s.items}</dd></>)}
+    </dl>
+  </section>
+
+  <section class="section" id="contact" aria-labelledby="contact-h">
+    <div class="contact">
+      <h2 id="contact-h">Get in touch</h2>
+      <p>The fastest way to reach me is email: <a href={`mailto:${site.email}`}>{site.email}</a></p>
+      <div class="ctas">
+        <a class="btn primary" href={`mailto:${site.email}`}><Icon name="mail" />Email me</a>
+        <a class="btn" href={site.resume}><Icon name="download" />Resume (PDF)</a>
+      </div>
+    </div>
+  </section>
+</Base>

@@ -1,0 +1,75 @@
+---
+import '@fontsource-variable/inter';
+import '@fontsource-variable/jetbrains-mono';
+import '../styles/global.css';
+import Icon from '../components/Icon.astro';
+import { site } from '../data/site';
+
+interface Props { title?: string; description?: string }
+const { title = site.title, description = site.description } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const ogImage = new URL('/og.png', Astro.site);
+---
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#09090b" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script is:inline>
+      // Dark is the default; only an explicit choice switches to light. Runs before paint (no flash).
+      try { if (localStorage.getItem('theme') === 'light') document.documentElement.dataset.theme = 'light'; } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+    <main id="main">
+      <div class="wrap">
+        <slot />
+      </div>
+    </main>
+    <footer>
+      <div class="wrap">© {new Date().getFullYear()} {site.name} · Built with Astro · <a href={site.github}>GitHub</a></div>
+    </footer>
+    <nav class="dock" aria-label="Site">
+      <a href="/" aria-label="Home" aria-current={path === '/' ? 'page' : undefined}><Icon name="home" /></a>
+      <a href="/research/atlas/" aria-label="ATLAS research write-up" aria-current={path.startsWith('/research') ? 'page' : undefined}><Icon name="flask" /></a>
+      <a href={site.resume} aria-label="Resume (PDF)"><Icon name="file" /></a>
+      <span class="sep" aria-hidden="true"></span>
+      <a href={site.github} aria-label="GitHub" rel="me"><Icon name="github" /></a>
+      <a href={site.linkedin} aria-label="LinkedIn" rel="me"><Icon name="linkedin" /></a>
+      <a href={`mailto:${site.email}`} aria-label="Email"><Icon name="mail" /></a>
+      <span class="sep" aria-hidden="true"></span>
+      <button type="button" id="theme-toggle" aria-label="Switch to light theme">
+        <Icon name="moon" class="moon" /><Icon name="sun" class="sun" />
+      </button>
+    </nav>
+    <script is:inline>
+      (function () {
+        var root = document.documentElement, btn = document.getElementById('theme-toggle');
+        function sync() {
+          var light = root.dataset.theme === 'light';
+          btn.setAttribute('aria-label', light ? 'Switch to dark theme' : 'Switch to light theme');
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', light ? '#ffffff' : '#09090b');
+        }
+        sync();
+        btn.addEventListener('click', function () {
+          root.dataset.theme = root.dataset.theme === 'light' ? 'dark' : 'light';
+          try { localStorage.setItem('theme', root.dataset.theme); } catch (e) {}
+          sync();
+        });
+      })();
+    </script>
+  </body>
+</html>

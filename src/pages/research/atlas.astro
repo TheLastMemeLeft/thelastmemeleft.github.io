@@ -1,0 +1,110 @@
+---
+// Source for every number on this page:
+//   Obsidian Vault/Areas/ATLAS Lab/Research/Result 2026-11-10 - Thesis DFT slabs.md (audited 2026-11-10)
+// Lab OK'd sharing plots + summary numbers (Aryan, 2026-11-17). Raw structures / QE files are NOT published.
+import { Image } from 'astro:assets';
+import Base from '../../layouts/Base.astro';
+import ThemedFigure from '../../components/ThemedFigure.astro';
+import polarization from '../../assets/polarization.png';
+
+const rows = [
+  // head, D3, slab dE (DFT -1.29), shift up/down (Å), dG up, dG down, ddG
+  { head: 'UMA oc25 (RPBE+D3 labels)', d3: 'built in', slab: -1.24, shift: '0.03 / 0.11', up: -0.42, down: 0.35, ddg: 0.77 },
+  { head: 'UMA omat (PBE)', d3: 'no', slab: -1.34, shift: '0.03 / 0.02', up: -0.33, down: 0.33, ddg: 0.66 },
+  { head: 'UMA oc22 (PBE+U)', d3: 'no', slab: -0.92, shift: '0.03 / 0.03', up: -0.32, down: 0.31, ddg: 0.62 },
+  { head: 'UMA omat', d3: 'yes', slab: -0.93, shift: '0.16 / 0.22', up: -0.31, down: 0.29, ddg: 0.6 },
+  { head: 'UMA oc22', d3: 'yes', slab: -0.51, shift: '0.20 / 0.24', up: -0.28, down: 0.26, ddg: 0.54 },
+];
+const f = (x: number) => (x > 0 ? '+' : x < 0 ? '−' : '') + Math.abs(x).toFixed(2);
+---
+<Base
+  title="Can an ML potential reproduce a switchable catalyst? · Aryan Agarwal"
+  description="Benchmarking Meta FAIR's UMA machine-learning interatomic potential against DFT for hydrogen binding on a polarization-switchable SrRuO3/BaTiO3 catalyst."
+>
+  <article class="article">
+    <a class="back" href="/">← Home</a>
+    <p class="mono muted" style="margin:0;font-size:.85rem">Research · ATLAS Materials Physics Lab, UC San Diego · Oct 2026 – present</p>
+    <h1>Can a machine-learning potential reproduce a switchable catalyst?</h1>
+    <p class="lede">I benchmarked Meta FAIR's UMA foundation potential against density functional theory (DFT) for hydrogen binding on a ferroelectric catalyst whose behavior flips with its polarization.</p>
+
+    <div class="tldr">
+      <p><strong>In one paragraph:</strong> a thin SrRuO<sub>3</sub> catalyst on ferroelectric BaTiO<sub>3</sub> should bind hydrogen strongly in one polarization state and weakly in the other. Lab DFT puts the gap between the two states at <strong>0.91 eV</strong>. Running on the lab's own DFT structures, an off-the-shelf UMA potential gets the direction right with every oxide-trained head (one state binds H, the other releases it). It recovers <strong>0.66 eV</strong> with the like-for-like head and up to <strong>0.77 eV</strong> with the closest one, about 70–85% of the gap, in minutes on a laptop GPU.</p>
+    </div>
+
+    <ul class="tiles">
+      <li><span class="v">0.66–0.77 eV</span><span class="l">ML switching gap (like-for-like head → closest head) vs 0.91 eV from DFT</span></li>
+      <li><span class="v">0.19 s</span><span class="l">per UMA energy + forces call (62 atoms, laptop GPU), vs ~2.6 min per single DFT SCF iteration on the Expanse cluster (a DFT energy needs many)</span></li>
+      <li><span class="v">~17 min</span><span class="l">whole comparison on a laptop GPU</span></li>
+    </ul>
+
+    <h2>Why this matters</h2>
+    <p>A good catalyst has to hold reaction intermediates "just right": tightly enough to react, loosely enough to let go. That trade-off (the Sabatier principle) caps how fast a static catalyst can be. <em>Dynamic</em> catalysis tries to get around it by switching the surface between a "grab" state and a "release" state.</p>
+    <p>Ferroelectrics like BaTiO<sub>3</sub> are a natural switch. A voltage moves the Ti ion slightly up or down inside its oxygen cage, which flips the material's built-in electric field. DFT work in our lab (Abbasi, 2023) predicts that this flip changes how strongly a SrRuO<sub>3</sub> skin binds hydrogen. DFT is accurate but slow, so screening many candidate materials needs a faster model. Foundation machine-learning interatomic potentials (MLIPs) are the obvious candidate. The question is whether they capture an effect this subtle.</p>
+
+    <figure>
+      <div class="frame paper">
+        <Image src={polarization} alt="Diagram of a BaTiO3 unit cell in three states: no polarization with Ti centered, polarization up with Ti shifted toward the surface, and polarization down with Ti shifted into the film." widths={[680, 1360]} sizes="(max-width: 760px) 100vw, 696px" />
+      </div>
+      <figcaption><strong>The switch is a tiny shift.</strong> Moving Ti by about 0.17 Å flips the built-in field, and with it the surface chemistry. Green Ba, red O, grey Ti.</figcaption>
+    </figure>
+
+    <h2>What I found</h2>
+    <figure>
+      <div class="frame">
+        <ThemedFigure name="dg" alt="Dot plot of hydrogen binding free energy for six setups. In every setup polarization-up is below zero (−0.28 to −0.51 eV) and polarization-down is above zero (+0.26 to +0.40 eV)." width={640} height={460} />
+      </div>
+      <figcaption><strong>Every setup reproduces the switch:</strong> polarization-up binds H (ΔG &lt; 0) and polarization-down releases it (ΔG &gt; 0). H is placed atop Ru on the lab's DFT slabs. UMA values use ΔG = ΔE + 0.24 eV. Thesis values are as reported, under the thesis's own correction convention, so compare the gaps rather than exact positions.</figcaption>
+    </figure>
+
+    <figure>
+      <div class="frame">
+        <ThemedFigure name="ddg" alt="Bar chart of the switching gap ΔΔG by model head: oc25 0.77, omat 0.66, oc22 0.62, omat plus D3 0.60, oc22 plus D3 0.54, and the first hand-built slab 0.41 eV. A vertical line marks the thesis DFT value of 0.91 eV." width={640} height={440} />
+      </div>
+      <figcaption><strong>Across all five setups UMA recovers about 60–85% of the DFT gap, and the structure mattered most.</strong> ΔΔG = ΔG(down) − ΔG(up) at the same Ru site. The hydrogen reference and the free-energy constant cancel in it, which makes it the fairest number to compare across codes. My first hand-built slab topped out at 0.41 eV. The lab's DFT structures (different termination, cell and constraints) closed most of the gap.</figcaption>
+    </figure>
+
+    <h2>What I built</h2>
+    <ul>
+      <li>A <strong>fault-tolerant, resumable GPU pipeline</strong> (PyTorch, CUDA, ASE, pymatgen) that places and relaxes adsorbates with Meta's AdsorbML, and also runs forced-site calculations, across model heads and dispersion settings.</li>
+      <li>A <strong>benchmark across 4 UMA heads</strong> (OC20, OC22, OC25, OMat) with and without DFT-D3 dispersion, on UMA 1.2 and 1.2.1. The OC20 head (trained on metals, no oxides) predicted the switch backwards on my first rebuilt slab, so I dropped it for this system.</li>
+      <li><strong>Sanity checks against DFT before trusting adsorption numbers</strong>: does each head reproduce the bare-slab energy difference and geometry? (See the table below.)</li>
+      <li>An <strong>audit pass</strong> that recomputes every reported number from the raw outputs. It caught a free-energy convention mismatch (+0.14 vs the standard +0.24 eV) between scripts.</li>
+    </ul>
+
+    <h2>Caveats I'd flag to a reviewer</h2>
+    <ul>
+      <li><strong>Which head to trust:</strong> oc25 gives the closest gap, but it is trained on RPBE+D3 data, while the thesis used PBE+U. The like-for-like head is <strong>omat (PBE), at 0.66 eV</strong>. I treat the 0.62–0.77 eV spread across the no-D3 heads as model uncertainty.</li>
+      <li><strong>Adding D3 makes the match worse</strong> here, because the reference DFT used no dispersion correction.</li>
+      <li><strong>Site preference:</strong> an unconstrained AdsorbML search prefers surface O over Ru in every case, while the Ru-site story assumes H sits on Ru. That is an open question for the next step.</li>
+      <li><strong>Remaining gap</strong> (0.66–0.77 vs 0.91 eV): possible causes are the H* geometry, how +U is applied (the OMat training data applies no U to Ru or Ti; the thesis does), the electrostatic boundary conditions, or plain model error.</li>
+    </ul>
+
+    <details>
+      <summary>Expert detail: levels of theory, checks, full numbers</summary>
+      <p><strong>Reference DFT</strong> (Quantum ESPRESSO, from the thesis): PBE+U (U = 2.5 eV Ru, 4 eV Ti), GBRV ultrasoft pseudopotentials, 40/320 Ry cutoffs, 2×4×1 k-points, no spin, no vdW, 2D Coulomb cutoff. 2×1 cell, 62 atoms, ½ ML H on Ru.</p>
+      <p><strong>ML model:</strong> UMA-S 1.2.1 (fairchem). Its heads are trained on VASP/PAW data, so only energy <em>differences</em> are compared, never absolute energies. Free energy: ΔG = ΔE + ΔZPE − TΔS ≈ ΔE + 0.24 eV (Nørskov et al., 2005).</p>
+      <div class="table-wrap">
+        <table>
+          <caption class="sr-only">UMA results on the thesis DFT slabs by model head</caption>
+          <thead>
+            <tr><th>Head</th><th>D3</th><th class="num">Slab E(down)−E(up)<br />DFT −1.29</th><th class="num">Atom shift vs DFT<br />up / down (Å)</th><th class="num">ΔG up</th><th class="num">ΔG down</th><th class="num">ΔΔG</th></tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => (
+              <tr><td>{r.head}</td><td>{r.d3}</td><td class="num">{f(r.slab)}</td><td class="num">{r.shift}</td><td class="num">{f(r.up)}</td><td class="num">{f(r.down)}</td><td class="num">{f(r.ddg)}</td></tr>
+            ))}
+            <tr><td>Thesis DFT (PBE+U)</td><td>no</td><td class="num">−1.29</td><td class="num">n/a</td><td class="num">−0.51</td><td class="num">+0.40</td><td class="num">+0.91</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="muted" style="font-size:.85rem;margin-top:10px">Energies in eV. H forced atop Ru. Thesis ΔG values use the thesis's own correction convention, so ΔΔG is the convention-free comparison.</p>
+    </details>
+
+    <h2>What's next</h2>
+    <p>Fine-tuning interatomic potentials on lab DFT data, and a conditional variational autoencoder that targets ΔΔG to propose candidate catalyst surfaces for the hydrogen evolution reaction.</p>
+
+    <div class="credits">
+      <p><strong>Credits.</strong> Work done in the ATLAS Materials Physics Lab at UC San Diego (PI: Prof. Tod Pascal), mentored by Ricardo Silva-Buarque, who provided the reference DFT structures. Reference: P. Abbasi, <em>Dynamic Catalysis based on Ferroelectric Perovskites</em>, PhD thesis, UC San Diego (2023). Model: <a href="https://github.com/facebookresearch/fairchem">UMA / fairchem</a> by Meta FAIR Chemistry. Structures and raw DFT outputs belong to the lab and are not published here.</p>
+    </div>
+  </article>
+</Base>

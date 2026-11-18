@@ -1,15 +1,8 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 
-import tailwindcss from '@tailwindcss/vite';
-
-// https://astro.build/config
+// User site repo (thelastmemeleft.github.io) is served at the domain root, so no `base`.
 export default defineConfig({
-  site: 'https://thelastmemeleft.github.io', 
-  base: '/',                    
-
-  vite: {
-    plugins: [tailwindcss()]
-  },
-  trailingSlash: 'always',
+  site: 'https://thelastmemeleft.github.io',
+  trailingSlash: 'ignore',
 });

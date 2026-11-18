@@ -1,17 +1,17 @@
 {
-  "name": "green-group",
+  "name": "portfolio-site",
   "type": "module",
-  "version": "0.0.1",
+  "version": "1.0.0",
+  "private": true,
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "plots": "C:\\Users\\aryan\\miniforge3\\envs\\atlas-ml\\python.exe scripts/make_plots.py"
   },
   "dependencies": {
-    "@fontsource/inter": "^5.2.8",
-    "@tailwindcss/vite": "^4.1.18",
-    "astro": "^5.16.8",
-    "tailwindcss": "^4.1.18"
+    "@fontsource-variable/inter": "5.3.0",
+    "@fontsource-variable/jetbrains-mono": "5.3.0",
+    "astro": "7.4.12"
   }
 }

@@ -1,43 +1,27 @@
-# Astro Starter Kit: Minimal
+# Aryan Agarwal: portfolio site
 
-```sh
-npm create astro@latest -- --template minimal
+Live (after first deploy): https://thelastmemeleft.github.io
+
+Astro 7 static site, deployed to GitHub Pages by `.github/workflows/deploy.yml` on every push to `main`.
+
+## Edit content
+- **All text:** `src/data/site.ts`. Every claim must trace to the Question Bank, resume v5, or the ATLAS result note (see the header comment).
+- **ATLAS write-up:** `src/pages/research/atlas.astro`.
+- **Plots:** edit numbers in `scripts/make_plots.py`, then `npm run plots` (uses the `atlas-ml` conda env's Python). Writes `public/figures/*-{dark,light}.svg`.
+- **Resume:** `public/Aryan_Agarwal_Resume.pdf` is the no-phone copy. Rebuild it with
+  `python C:\Users\aryan\Projects\autoapply\build_resume_v5.py --web`, then copy `out\resume_v5_web\Aryan_Agarwal_Resume.pdf` here.
+- **Social card:** `scripts/make_og.py` → `public/og.png`.
+
+## Run locally
+```powershell
+cd C:\Users\aryan\Projects\portfolio-site
+npm install
+npm run dev        # http://localhost:4321 (live reload)
+npm run build      # output in dist/
+npm run preview    # serve dist/
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
-
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
-```
-
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+## Rules
+- No phone, home address, GPA, or secrets anywhere in this repo.
+- ATLAS: plots, summary numbers and method only. Never commit lab structures or QE/DFT output files.
+- Versions are pinned (Astro 7.4.12). Upgrade on purpose, about once a year, and read the Astro upgrade guide first.
